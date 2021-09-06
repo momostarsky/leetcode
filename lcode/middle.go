@@ -616,3 +616,194 @@ func ZigzagLevelOrder(root *TreeNode) [][]int {
 	return result
 
 }
+
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func buildTree(preorder []int, inorder []int) *TreeNode {
+	// 给定一棵树的前序遍历 preorder 与中序遍历inorder。请构造二叉树并返回其根节点。
+	/*
+		                1
+		   		2 --------------3
+		   	4                        5
+		   	    6
+		       7  8
+			如图1所示，三种遍历方法(人工)得到的结果分别是：
+			先序：1 2 4 6 7 8 3 5
+			中序：4 7 6 8 2 1 3 5
+
+			后序：7 8 6 4 2 5 3 1
+			三种遍历方法的考查顺序一致，得到的结果却不一样，原因在于：
+
+			先序：考察到一个节点后，即刻输出该节点的值，并继续遍历其左右子树。(根左右)
+
+			中序：考察到一个节点后，将其暂存，遍历完左子树后，再输出该节点的值，然后遍历右子树。(左根右)
+
+			后序：考察到一个节点后，将其暂存，遍历完左右子树后，再输出该节点的值。(左右根)
+
+			作者：阿菜的博客
+			链接：https://www.jianshu.com/p/456af5480cee
+			来源：简书
+			著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+	*/
+
+	if len(preorder) == 0 {
+		return nil
+	}
+
+	if len(preorder) == 1 {
+		return &TreeNode{
+			Val: preorder[0],
+		}
+	}
+
+	if len(preorder) == 2 {
+
+		var rootNode = &TreeNode{
+			Val: preorder[0],
+		}
+		if preorder[0] == inorder[0] {
+			rootNode.Right = &TreeNode{
+				Val: preorder[1],
+			}
+		} else {
+			rootNode.Left = &TreeNode{
+				Val: preorder[1],
+			}
+		}
+		return rootNode
+
+	}
+	/*
+		1) preorder 的第一个是跟节点
+	*/
+	var rootVal = preorder[0]
+
+	var rootIndex = -1
+
+	for i := 0; i < len(inorder); i++ {
+
+		if rootVal == inorder[i] {
+			rootIndex = i
+			break
+		}
+	}
+
+	//	var res []*TreeNode = nil
+
+	/// 跟节点的值
+
+	inSubLeft := inorder[:rootIndex]
+	inSubRight := inorder[rootIndex+1:]
+
+	preSubLeft := preorder[1 : len(inSubLeft)+1]
+	preSubRight := preorder[len(inSubLeft)+1:]
+
+	// fmt.Printf("leftNodes:%v\n", inSubLeft)
+	// fmt.Printf("rightNodes:%v\n", inSubRight)
+
+	// fmt.Printf("leftNodes:%v\n", preSubLeft)
+	// fmt.Printf("rightNodes:%v\n", preSubRight)
+
+	var leftTree = buildTree(preSubLeft, inSubLeft)
+
+	var rightTree = buildTree(preSubRight, inSubRight)
+
+	return &TreeNode{
+		Val:   rootVal,
+		Left:  leftTree,
+		Right: rightTree,
+	}
+}
+
+//buildTreeWithoutRecurive  非递归构建二插树
+func buildTreeWithoutRecurive(preorder []int, inorder []int) *TreeNode {
+	if len(preorder) == 0 {
+		return nil
+	}
+	root := &TreeNode{
+		Val: preorder[0],
+	}
+	if len(preorder) == 1 {
+		return root
+	}
+	stack := []*TreeNode{}
+	stack = append(stack, root)
+	var pIn = 0
+
+	var nlen = len(inorder)
+
+	var cNode *TreeNode = nil
+	//			     3
+	//			   	/ \
+	//			   9  20
+	//			  /  /  \
+	//			 8  15   7
+	//			/ \
+	//		   5  10
+	//		  /
+	//		 4
+
+	//  preorder = [3, 9, 8, 5, 4, 10, 20, 15, 7]
+	//  inorder = [4, 5, 8, 10, 9, 3, 15, 20, 7]
+
+	for i := 1; i < nlen; i++ {
+		// 当期节点是最后一个节点
+		var preorderVal = preorder[i]
+		cNode = stack[len(stack)-1]
+		// 读取当前节点的全部左子树, 此时 inorder[pIn] 就是最左子树
+		if cNode.Val != inorder[pIn] {
+			cNode.Left = &TreeNode{
+				Val: preorder[i],
+			}
+			stack = append(stack, cNode.Left)
+
+		} else {
+			//  当前堆栈顶部的左节点
+			for len(stack) > 0 && stack[len(stack)-1].Val == inorder[pIn] {
+				cNode = stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+				pIn++
+			}
+
+			cNode.Right = &TreeNode{
+				Val: preorderVal,
+			}
+			stack = append(stack, cNode.Right)
+		}
+
+	}
+
+	return root
+
+}
+
+func BuildTree(preorder []int, inorder []int) *TreeNode {
+	/*
+			方法二：迭代
+		思路
+
+		迭代法是一种非常巧妙的实现方法。
+
+		对于前序遍历中的任意两个连续节点 uu 和 vv，根据前序遍历的流程，我们可以知道 uu 和 vv 只有两种可能的关系：
+
+		vv 是 uu 的左儿子。这是因为在遍历到 uu 之后，下一个遍历的节点就是 uu 的左儿子，即 vv；
+
+		uu 没有左儿子，并且 vv 是 uu 的某个祖先节点（或者 uu 本身）的右儿子。
+		如果 uu 没有左儿子，那么下一个遍历的节点就是 uu 的右儿子。
+		如果 uu 没有右儿子，我们就会向上回溯，直到遇到第一个有右儿子（且 uu 不在它的右儿子的子树中）的节点 u_au
+		a
+		​
+		 ，那么 vv 就是 u_au
+		​
+		  的右儿子。
+	*/
+
+	return buildTreeWithoutRecurive(preorder, inorder)
+}

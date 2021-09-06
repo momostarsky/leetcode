@@ -95,6 +95,7 @@ func createTreeNode() *leetcode.TreeNode {
 
 	   后序：考察到一个节点后，将其暂存，遍历完左右子树后，再输出该节点的值。(左右根)
 
+	   实施先这样案例
 	*/
 
 }
@@ -124,26 +125,8 @@ func exchangeSlice(slice []int) {
 
 func main() {
 
-	leetcode.TestLevelOrder()
+	var mx = leetcode.BuildTree([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7})
 
-	fmt.Println("LLLK")
-
-	// slice := []int{1, 2, 3, 4, 5}
-	// fmt.Println(slice)
-	// exchangeSlice(slice)
-	// fmt.Println(slice)
-
-	// var rest []int = nil
-
-	// rest = append(rest, 1)
-
-	// rest = append(rest, 2)
-
-	// fmt.Printf("%v\n", rest)
-	var tn = createTreeNode()
-
-	var mg = leetcode.ZigzagLevelOrder(tn)
-
-	fmt.Printf("%v\n", mg)
+	fmt.Printf("%v\n", mx)
 
 }
