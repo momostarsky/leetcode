@@ -807,3 +807,402 @@ func BuildTree(preorder []int, inorder []int) *TreeNode {
 
 	return buildTreeWithoutRecurive(preorder, inorder)
 }
+
+///
+/*
+给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+
+初始状态下，所有 next 指针都被设置为 NULL。
+
+
+
+进阶：
+
+你只能使用常量级额外空间。
+使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
+
+示例：
+
+
+
+作者：力扣 (LeetCode)
+链接：https://leetcode-cn.com/leetbook/read/top-interview-questions-medium/xvijdh/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+*/
+
+/**
+ * Definition for a Node.
+ * type Node struct {
+ *     Val int
+ *     Left *Node
+ *     Right *Node
+ *     Next *Node
+ * }
+ */
+type Node struct {
+	Val   int
+	Left  *Node
+	Right *Node
+	Next  *Node
+}
+
+func connectCore(l *Node, r *Node) {
+
+	l.Next = r
+
+	// 因为是满二叉树，所以进入递归前只需判断一个分支是否为空
+	if l.Left == nil {
+		return
+	}
+
+	// 递归，左右节点的所有子树从左往右依次连接
+	// 这样到最后最右子树的next必定指向null，而其它子树也已经依次连接
+	connectCore(l.Left, l.Right)
+	connectCore(l.Right, r.Left)
+	connectCore(r.Left, r.Right)
+
+}
+
+func connect(root *Node) *Node {
+	///给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+
+	if root == nil || root.Left == nil {
+
+		return root
+	}
+
+	connectCore(root.Left, root.Right)
+	return root
+
+}
+
+func enumNode(root *TreeNode) []int {
+
+	if root == nil {
+		return nil
+	}
+	var left []int = nil
+	if root.Left != nil {
+		left = append(left, enumNode(root.Left)...)
+	}
+	left = append(left, root.Val)
+
+	if root.Right != nil {
+		left = append(left, enumNode(root.Right)...)
+	}
+	return left
+
+}
+
+func KthSmallest(root *TreeNode, k int) int {
+	var res []int = nil
+	var lq []*TreeNode = nil
+
+	for root != nil || len(lq) > 0 {
+
+		// 左树进入堆栈
+		for root != nil {
+			lq = append(lq, root)
+
+			root = root.Left
+		}
+		//---
+		cr := lq[len(lq)-1]
+
+		res = append(res, cr.Val)
+		root = cr.Right
+		lq = lq[:len(lq)-1]
+
+	}
+
+	fmt.Printf("中序列遍历结果:%v\n", res)
+	return res[k-1]
+
+}
+
+//---深度优先便利会内存溢出
+func dfs(grid [][]byte, x, y int, m, n int) {
+
+	if x >= 0 && x < m && y >= 0 && y < n { //防止越界
+		if grid[x][y] == '1' {
+			grid[x][y] = '0'
+			dfs(grid, x+1, y, m, n)
+			dfs(grid, x-1, y, m, n)
+			dfs(grid, x, y+1, m, n)
+			dfs(grid, x, y-1, m, n)
+		}
+	}
+}
+
+// ----广度优先便利
+func bfs(grid [][]byte, x, y int, m, n int) {
+
+	var lq [][2]int = nil
+
+	lq = append(lq, [2]int{x, y})
+	for len(lq) > 0 {
+		var arr = lq[0]
+		var i = arr[0]
+		var j = arr[1]
+		lq = lq[1:]
+		if 0 <= i && i < m && 0 <= j && j < n && grid[i][j] == '1' {
+
+			grid[i][j] = '0'
+			lq = append(lq, [2]int{i + 1, j})
+			lq = append(lq, [2]int{i - 1, j})
+			lq = append(lq, [2]int{i, j + 1})
+			lq = append(lq, [2]int{i, j - 1})
+
+		}
+	}
+
+}
+
+func numIslands(grid [][]byte) int {
+	if len(grid) == 0 {
+		return 0
+	}
+	var m = len(grid)    // rows
+	var n = len(grid[0]) // cols
+	var res = 0
+
+	for x := 0; x < m; x++ {
+		for y := 0; y < n; y++ {
+			if grid[x][y] == '1' {
+				bfs(grid, x, y, m, n) //找到一个起点全都玷污一遍
+				res = res + 1         //记录小岛个数
+			}
+		}
+	}
+	return res
+}
+
+func JpNumIslands(grid [][]byte) int {
+	return numIslands(grid)
+}
+
+var dmap map[byte]string = map[byte]string{
+	'2': "abc",
+	'3': "def",
+	'4': "ghi",
+	'5': "jkl",
+	'6': "mno",
+	'7': "pqrs",
+	'8': "tuv",
+	'9': "wxyz",
+}
+
+func LetterCombinations(digits string) []string {
+	if len(digits) == 0 {
+		return nil
+	}
+
+	var res []string = nil
+
+	if len(digits) == 1 {
+		var ax, _ = dmap[digits[0]]
+		for i := 0; i < len(ax); i++ {
+			res = append(res, string(ax[i]))
+		}
+		return res
+	}
+
+	if len(digits) == 2 {
+		var ax, _ = dmap[digits[0]]
+		var arr []string = nil
+		for i := 0; i < len(ax); i++ {
+			arr = append(arr, string(ax[i]))
+		}
+
+		var bx, _ = dmap[digits[1]]
+
+		var barr []string = nil
+		for j := 0; j < len(bx); j++ {
+			barr = append(barr, string(bx[j]))
+		}
+
+		for _, v := range arr {
+
+			for _, b := range barr {
+
+				var x = v + b
+
+				res = append(res, x)
+
+			}
+
+		}
+		return res
+	}
+
+	var ax, _ = dmap[digits[0]]
+	var arr []string = nil
+	for i := 0; i < len(ax); i++ {
+		arr = append(arr, string(ax[i]))
+	}
+	var brr = LetterCombinations(digits[1:])
+	for _, v := range arr {
+
+		for _, b := range brr {
+
+			var x = v + b
+
+			res = append(res, x)
+
+		}
+	}
+	return res
+
+}
+
+func GenerateParenthesis(n int) []string {
+	//1 <= n <= 8
+
+	var dp [][]string = nil
+	dp = append(dp, []string{
+		"",
+	})
+
+	for i := 1; i <= n; i++ {
+		var cur []string = nil
+		for j := 0; j < i; j++ {
+
+			var str1 = dp[j]
+			var str2 = dp[i-1-j]
+			for _, s1 := range str1 {
+				for _, s2 := range str2 {
+					// 枚举右括号的位置
+
+					cur = append(cur, "("+s1+")"+s2)
+
+				}
+			}
+		}
+		dp = append(dp, cur)
+
+	}
+	return dp[n]
+
+}
+
+func valid(current string) bool {
+	var balance = 0
+	for _, c := range current {
+		if c == '(' {
+			balance = balance + 1
+		} else {
+			balance = balance - 1
+		}
+		if balance < 0 {
+			return false
+		}
+	}
+	return balance == 0
+}
+
+func isValidate(pm string) bool {
+
+	var lq []byte = nil
+	var nl = len(pm)
+	var pos = 0
+	for pos < nl {
+
+		if pm[pos] == '(' {
+			lq = append(lq, '(')
+		} else {
+			if len(lq) == 0 {
+				return false
+			}
+			lq = lq[:len(lq)-1]
+		}
+		pos = pos + 1
+	}
+
+	return len(lq) == 0
+
+}
+
+func GenerateParenthesisWithDP(n int) []string {
+	//1 <= n <= 8
+
+	if n == 1 {
+		return []string{
+			"()",
+		}
+	}
+	if n == 2 {
+		return []string{
+			"(())",
+			"()()",
+		}
+	}
+	//  为了生成所有序列，我们可以使用递归。长度为 n 的序列就是在长度为 n-1 的序列前加一个 '(' 或 ')'。
+	var res []string = nil
+	//  把所有可能的（）对都生成出来
+
+	var subx = GenerateParenthesisWithDP(n - 1)
+
+	for _, v := range subx {
+		for i := 0; i < len(v); i++ {
+
+			v1 := string(v[:i]) + "()" + string(v[i:])
+			if valid(v1) {
+				res = append(res, v1)
+			}
+			v2 := string(v[:i]) + ")(" + string(v[i:])
+			if valid(v2) {
+				res = append(res, v2)
+			}
+		}
+
+	}
+
+	var ojk []string = nil
+	var mp map[string]bool = make(map[string]bool)
+	for _, v := range res {
+		if _, mok := mp[v]; !mok {
+			mp[v] = true
+			ojk = append(ojk, v)
+		}
+
+	}
+
+	return ojk
+
+}
+
+var dfsList []string = nil
+
+func backtrack(S []byte, left, right, n int) {
+	if len(S) == 2*n {
+		dfsList = append(dfsList, string(S))
+		return
+	}
+	if left < n {
+		S = append(S, '(')
+		backtrack(S, left+1, right, n)
+		S = S[:len(S)-1]
+	}
+	if right < left {
+		S = append(S, ')')
+		backtrack(S, left, right+1, n)
+
+	}
+}
+
+func GenerateParenthesisWithDFS(n int) []string {
+	dfsList = nil
+	var prx []byte
+	backtrack(prx, 0, 0, n)
+	return dfsList
+}

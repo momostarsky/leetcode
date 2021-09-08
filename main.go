@@ -76,10 +76,10 @@ func createTreeNode() *leetcode.TreeNode {
 	}
 	/*
 	                    1
-	   		2 --------------3
-	   	4                             5
+	   		    2 --------------3
+	    4                             5
 	   	    6
-	   	7       8
+	   	 7       8
 
 	   	如图1所示，三种遍历方法(人工)得到的结果分别是：
 
@@ -125,8 +125,12 @@ func exchangeSlice(slice []int) {
 
 func main() {
 
-	var mx = leetcode.BuildTree([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7})
+	var x = leetcode.GenerateParenthesisWithDFS(3)
 
-	fmt.Printf("%v\n", mx)
+	fmt.Printf("len:%d,%v\n", len(x), x)
+
+	var x2 = leetcode.GenerateParenthesisWithDFS(1)
+
+	fmt.Printf("len:%d,%v\n", len(x2), x2)
 
 }
