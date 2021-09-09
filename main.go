@@ -125,12 +125,9 @@ func exchangeSlice(slice []int) {
 
 func main() {
 
-	var x = leetcode.GenerateParenthesisWithDFS(3)
+	var r = []int{3, 7, 2, 1, 9, 10}
+	fmt.Printf("%v\n", r)
+	var _ = leetcode.HeapSort(r)
 
-	fmt.Printf("len:%d,%v\n", len(x), x)
-
-	var x2 = leetcode.GenerateParenthesisWithDFS(1)
-
-	fmt.Printf("len:%d,%v\n", len(x2), x2)
-
+	fmt.Printf("%v\n", r)
 }
