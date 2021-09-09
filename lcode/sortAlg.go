@@ -1,5 +1,9 @@
 package leetcode
 
+/*
+说明：
+算法：  https://github.com/hustcc/JS-Sorting-Algorithm
+*/
 func heapSort(arr []int) []int {
 	arrLen := len(arr)
 	buildMaxHeap(arr, arrLen)
