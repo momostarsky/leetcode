@@ -3,6 +3,12 @@ package leetcode
 /*
 说明：
 算法：  https://github.com/hustcc/JS-Sorting-Algorithm
+动态演示：
+https://www.cnblogs.com/chengxiao/p/6129630.html
+
+https://zhuanlan.zhihu.com/p/124885051
+
+
 */
 func heapSort(arr []int) []int {
 	arrLen := len(arr)
