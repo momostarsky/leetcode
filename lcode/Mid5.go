@@ -526,3 +526,301 @@ func canJump(nums []int) bool {
 	return true
 
 }
+
+/*
+
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
+
+*/
+
+func UniquePaths(m int, n int) int {
+	if m == 1 || n == 1 {
+		return 1
+	}
+
+	//dp[i][j] 表示  网格为 i 行 j 列 的布局下， 从[0,0]到[i-1][j-1]有多上种走法
+	var dp [][]int = nil
+
+	for i := 0; i < m; i++ {
+		dp = append(dp, make([]int, n))
+
+	}
+
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if i == 0 || j == 0 {
+				//相当与1行或是1lie 的i情况
+				dp[i][j] = 1
+			} else {
+
+				dp[i][j] = dp[i-1][j] + dp[i][j-1]
+			}
+
+		}
+	}
+
+	return dp[m-1][n-1]
+
+}
+
+func CoinChange(coins []int, amount int) int {
+	/*
+		给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+		计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+		你可以认为每种硬币的数量是无限的。
+	*/
+	sort.Ints(coins)
+	fmt.Printf("Coins:%v\n", coins)
+
+	N := len(coins)
+	// dp[i] = dp[i-Cj]+1, 其中Cj为数组coins中的一个硬币面额
+	var dp = make([]int, amount+1)
+	// 0元需要0个硬币
+	dp[0] = 0
+	for i := 1; i < amount+1; i++ {
+		dp[i] = amount + 1 //默认没有找到，因为  amount 个金额 需要 amount +1 个硬币的话，肯有至少一个硬币是小于0 的
+		//求  dp[i]
+		for j := 0; j < N; j++ {
+			// 如果当前硬币面额coins[j]小于当前金额i
+			if coins[j] <= i {
+				//  cons[j]表示的是当前的面额
+
+				if dp[i-coins[j]]+1 < dp[i] {
+					dp[i] = dp[i-coins[j]] + 1
+				}
+			}
+		}
+	}
+	if dp[amount] == (amount + 1) {
+		return -1
+	}
+	return dp[amount]
+
+}
+
+func CoinChangeExt(coins []int, amount int) int {
+	// 采用递归算法
+
+	/*
+
+
+			https://mingshan.fun/2021/02/19/dp-coin-change/
+
+
+		public static int solution3(int[] coins, int amount) {
+		  // f(x) 代表x面额最少用多少枚硬币拼出
+		  int[] f = new int[amount + 1];
+		  // 初始化
+		  f[0] = 0;
+
+		  // 数值从小到大进行计算
+		  // f[x] = min{ f[x - coin1] + 1 , f[x - coin2] + 1, ....}
+		  // 1,2..27
+		  for (int i = 1; i <= amount; i++) {
+		    // 先设置f(i) 为最大值，好进行比较更新
+		    f[i] = Integer.MAX_VALUE;
+
+		    for (int j = 0; j < coins.length; j++) {
+		      int coin = coins[j];
+		      // 当前待拼的面额必须大于等于硬币的面额
+		      // 并且f[x - coin1]不为Integer.MAX_VALUE，注意不能直接用 f[i] > (f[i - coin] + 1) 来判断，
+		      // 因为 f[i - coin]为Integer.MAX_VALUE， + 1 就是负数了，此时的f[i]计算结果为负数
+		      if (i >= coin && f[i - coin] != Integer.MAX_VALUE) {
+		        f[i] = Math.min(f[i - coin] + 1, f[i]);
+		      }
+		    }
+		  }
+
+		  // 不能拼出，返回-1
+		  if (f[amount] == Integer.MAX_VALUE) {
+		    return -1;
+		  }
+
+		  return f[amount];
+		}
+	*/
+
+	/*
+		给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+
+		计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+
+		你可以认为每种硬币的数量是无限的。
+	*/
+
+	/*
+
+
+			现有2元，5元，7元三种硬币，假设硬币都足够多，现求解：最少用多少枚上述硬币拼出27块钱？
+
+		递归解法
+		看到这个问题，我们一下子就可以想到一个树形结构，27块钱可以分别减去上面三种硬币的面额，剩下的值可以继续减去上面三种硬币的面额，直至无法再减，计算出刚好能减完的路线（从顶点到叶子节点）的节点数，最小的即是本题答案的解，图如下所示：
+
+		image
+
+		从上面的分析来看，很明显这道题可以用递归来做，而且比较简单，代码如下：
+
+		public static int solution1(int x) {
+			if (x == 0) {
+			  return 0;
+			}
+
+			int res = x + 1;
+
+			if (x >= 2) {
+		    	res = Math.min(solution1(x - 2) + 1, res);
+			}
+
+			if (x >= 5) {
+				res = Math.min(solution1(x - 5) + 1, res);
+			}
+
+			if (x >= 7) {
+				res = Math.min(solution1(x - 7) + 1, res);
+			}
+
+			return res;
+		}
+	*/
+
+	// 	这是一个挺经典的问题，解决方法有很多。这里介绍几个方法。
+	// 首先要有思路，这类问题的解决方法都类似。
+	// 总数为amount的现金换成n种不同方式的数目为：
+
+	// A :将现金换成除第一种硬币之外的所有其他硬币方式的数目，加上
+	// B: 将现金amount-coin换成所有硬币方式的数目，其中coin为第一种硬币的面值
+	// 这样就包括了所有的方法。
+	// 再定义最简单的情况：
+	// amount==0，算作有一种方法，1
+	// amount<0，没有方法，0
+	// coin==0，算作没有方法，0
+	// 递归
+
+	var helper func(coins []int, start int, amout int) int
+
+	helper = func(coins []int, start int, amout int) int {
+		if amout == 0 {
+			return 1
+		}
+		if amout < 0 || start == len(coins) {
+			return 0
+		}
+		return helper(coins, start+1, amout) + helper(coins, start, amount-coins[start])
+
+	}
+	// private int helper(int[] coins, int start, int amount) {
+	// 	if (amount == 0) return 1;
+	// 	if (amount < 0 || start == coins.length) return 0;
+	// 	return helper(coins, start + 1, amount) + helper(coins, start, amount - coins[start]);
+	// }
+	return helper(coins, 0, amount)
+
+}
+
+func LlengthOfLIS(nums []int) int {
+
+	N := len(nums)
+
+	if N == 1 {
+		return 1
+	}
+	if N == 2 {
+		if nums[0] < nums[1] {
+			return 2
+		} else {
+			return 1
+		}
+	}
+
+	// 算法思路
+
+	// 因为所求为子序列，很容易想到一种线性动态规划。
+	// 对于求最长上升子序列，上升我们肯定需要知道当前阶段最后一个元素为多少，最长我们还要知道当前我们的序列有多长。
+	// 那么我们就可以这样定义状态：
+	//    设 dp[i] 表示以 nums[i] 为结尾的最长上升子序列的长度
+	//   ，为了保证元素单调递增肯定只能从 i 前面且末尾元素比 nums[i] 小的状态转移过来
+	// 代码思路
+
+	// 状态转移方程为
+
+	// 每个位置初始值为 dp[i]=1（将自己作为一个序列）
+	// 答案可以是任何阶段中只要长度最长的那一个，所以我们边转移边统计答案
+
+	dp := make([]int, N)
+
+	var ans = 0
+	for i := 0; i < N; i++ {
+		dp[i] = 1
+
+		for j := 0; j < i; j++ {
+
+			if nums[j] < nums[i] {
+				//
+				if (dp[j] + 1) > dp[i] {
+					dp[i] = dp[j] + 1
+				}
+			}
+
+		}
+		//---取最长的
+		if dp[i] > ans {
+			ans = dp[i]
+		}
+
+	}
+	return ans
+
+}
+
+// First Greater or Equal
+func firstGE(nums []int, target int) int {
+
+	if nums[0] >= target {
+		return 0
+	}
+	var start = 0
+	var end = len(nums)
+	for start+1 < end {
+		var mid = start + (end-start)/2
+		if nums[mid] >= target {
+			end = mid
+		} else {
+			start = mid
+		}
+	}
+	return end
+}
+
+func LlengthOfLISExt(nums []int) int {
+
+	//10, 9, 2, 5, 3, 7, 101, 18
+
+	N := len(nums)
+	if N <= 1 {
+		return 1
+	}
+
+	var lis = make([]int, N)
+	lis[0] = 1 << 31
+	for i := 1; i < N; i++ {
+		lis[i] = 1 << 31
+	}
+
+	var ans = 0
+
+	for i := 0; i < N; i++ {
+		index := firstGE(lis, nums[i])
+
+		lis[index] = nums[i]
+		if index > ans {
+			ans = index
+		}
+	}
+	fmt.Printf("%v\n", lis[:ans+1])
+	return ans + 1 //  ans 的基数为0
+
+}
