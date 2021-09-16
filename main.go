@@ -84,7 +84,7 @@ func createTreeNode() *leetcode.TreeNode {
 	   	如图1所示，三种遍历方法(人工)得到的结果分别是：
 
 	   先序：1 2 4 6 7 8 3 5
-	   中序：4 7 6 8 2 1 3 5c
+	   中序：4 7 6 8 2 1 3 5
 	   后序：7 8 6 4 2 5 3 1
 
 	   三种遍历方法的考查顺序一致，得到的结果却不一样，原因在于：
@@ -95,7 +95,8 @@ func createTreeNode() *leetcode.TreeNode {
 
 	   后序：考察到一个节点后，将其暂存，遍历完左右子树后，再输出该节点的值。(左右根)
 
-	   实施先这样案例,不能输入中文实在是难受
+	   实施先这样案例,  中文输入法还是有问题吗，固定起来啦，不好听话
+	   中文输入法比较正常啊
 
 	*/
 
@@ -117,16 +118,16 @@ func executeNode() {
 }
 
 func exchangeSlice(slice []int) {
-	// for k, v := range slice {
-	// 	slice[k] = v * 2
-	// }
+	for k, v := range slice {
+		slice[k] = v * 2
+	}
 
 	slice = append(slice, 33)
 }
 
 func main() {
 
-	var res = leetcode.LlengthOfLISExt([]int{10, 9, 2, 5, 3, 7, 101, 18})
+	var res = leetcode.Fib2(5)
 	fmt.Printf("%v\n", res)
 
 }
