@@ -16,13 +16,13 @@ func TestNewRedBlackTree(t *testing.T) {
 		nums = append(nums, rand.Intn(count))
 	}
 
-	fmt.Println("source data: ", nums)
+	fmt.Println(" 原始数据 ,中文麻烦： ", nums)
 	now := time.Now()
 	for _, v := range nums {
 		redBlackTree.Add(v, v)
 	}
 
-	fmt.Println("redBlackTree:", now.Sub(time.Now()))
+	fmt.Println("zong", now.Sub(time.Now()))
 	redBlackTree.PrintPreOrder()
 	fmt.Println("节点数量:", redBlackTree.GetTreeSize())
 
