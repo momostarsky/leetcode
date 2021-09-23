@@ -6,13 +6,7 @@ import (
 	"sort"
 )
 
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
+// ListNode /**
 type ListNode struct {
 	Val  int
 	Next *ListNode
@@ -38,14 +32,7 @@ func SortString(s string) string {
 	return string(r)
 }
 
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
+// TreeNode Definition for a binary tree node.
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode
@@ -549,12 +536,12 @@ func AddTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 
 	}
 	//fmt.Printf("%v\n", arrx[0:lp])
-	var res *ListNode = &ListNode{
+	var res  = &ListNode{
 
 		Val:  int(arrx[0]),
 		Next: nil,
 	}
-	var p *ListNode = res
+	var p  = res
 
 	for i := 1; i < lp; i++ {
 

@@ -16,7 +16,7 @@ func TestNewRedBlackTree(t *testing.T) {
 		nums = append(nums, rand.Intn(count))
 	}
 
-	fmt.Println(" 原始数据 ,中文麻烦： ", nums)
+	fmt.Println(" 原始数据 ,中文麻烦， 讲究使用还行, 必须采用 Dash to Plank ！， 这个大一点点 ", nums)
 	now := time.Now()
 	for _, v := range nums {
 		redBlackTree.Add(v, v)
@@ -24,6 +24,6 @@ func TestNewRedBlackTree(t *testing.T) {
 
 	fmt.Println("zong", now.Sub(time.Now()))
 	redBlackTree.PrintPreOrder()
-	fmt.Println("节点数量:", redBlackTree.GetTreeSize())
+	fmt.Println("节点数量多少:", redBlackTree.GetTreeSize())
 
 }
